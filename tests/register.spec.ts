@@ -8,7 +8,7 @@ import { Toast } from '../pages/components/toast'
 import { faker } from '@faker-js/faker'
 import { Mission } from '../support/types'
 
-import { insertMission, deleteMission, deleteReservation, deleteTickets } from '../support/db'
+import { insertMission, deleteMission, deleteReservation, deleteTickets, cleanMission, cleanAndInsertMission } from '../support/db'
 
 let loginPage: LoginPage
 let dashPage: DashPage
@@ -32,13 +32,15 @@ test.beforeEach(async ({ page }) => {
 test('deve cadastrar uma nova missão', async ({ page }) => {
 
   const mission: Mission = {
-    id: 'LP-' + faker.string.alphanumeric({length: { min: 5, max: 5 }, casing: 'upper' }),
+    id: 'LP-0128A',
     rocket: 'Starship',
     baseId: 'orion',
     departureDate: '2028-01-20',
     returnDate: '2028-01-27',
     price: 1000
   }
+
+  await cleanMission(mission.id)
 
   await dashPage.addButton.click()
   await expect(registerPage.title).toBeVisible()
@@ -76,10 +78,7 @@ test('não deve cadastrar com o código duplicado', async ({ page }) => {
     price: 1000
   }
 
-  await deleteTickets(mission.id)
-  await deleteReservation(mission.id)
-  await deleteMission(mission.id)
-  await insertMission(mission)
+  await cleanAndInsertMission(mission.id, mission)
 
   await dashPage.addButton.click()
   await expect(registerPage.title).toBeVisible()

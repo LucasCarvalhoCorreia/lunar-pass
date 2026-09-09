@@ -21,6 +21,17 @@ export const db = new Kysely<Database>({
     plugins: [new CamelCasePlugin()]
 })
 
+export async function cleanMission(missionId: string) {
+  await deleteTickets(missionId)
+  await deleteReservation(missionId)
+  await deleteMission(missionId)
+}
+
+export async function cleanAndInsertMission(missionId: string, mission: Mission) {
+  await cleanMission(missionId)
+  await insertMission(mission)
+}
+
 export async function insertMission(mission: Mission) {
   await db
     .insertInto('missions')
