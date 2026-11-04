@@ -1,0 +1,43 @@
+{
+  "skill_name": "qa-test-automation",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Automatiza este cenário do Lunar Pass:\n\nContexto: Dado que estou autenticado no controle de missões\n\nCenário: não deve cadastrar com código duplicado\nDado que já existe uma missão com o código informado\nQuando eu submeto o cadastro com o mesmo código\nEntão eu sou informado de que já existe uma missão com este ID",
+      "expected_output": "Lê references/lunarpass.md e o código em playwright/, reutiliza RegisterPage/DashPage/fixture app, usa cleanAndInsertMission com ID exclusivo diferente de LP-0128A e LP-3001A, título igual ao nome do cenário, roda npx playwright test no spec em playwright/e2e e entrega o resumo.",
+      "assertions": [
+        "Lê a arquitetura Lunar Pass (docs/arquitetura.md ou references/lunarpass.md) e o código em playwright/ antes de escrever",
+        "Não usa assets/projeto/ como fonte de padrões",
+        "O título do teste é exatamente o nome do cenário",
+        "Importa test/expect de ../support e usa { app }",
+        "Page Object novo, se houver, é registrado em createApp",
+        "Massa via cleanAndInsertMission (ou cleanMission) com ID de missão exclusivo",
+        "Há uma asserção no spec para o Então, sem asserções extras de produto inventadas",
+        "O teste foi executado (ou marcado não executado com motivo) e o resultado informado é o observado"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Automatiza o cenário 'Buscar missões filtrando por uma base específica' do storefront. A pasta assets/projeto/ da skill genérica não existe neste repo.",
+      "expected_output": "Não bloqueia por assets/projeto vazio. Segue playwright/ + docs. Descobre a tela com Playwright MCP. Cria Page Object em playwright/support/pages, registra em createApp, não coloca spec na raiz, não usa XPath /.. nas bases (aderencia.md).",
+      "assertions": [
+        "Não pede para copiar arquivos para assets/projeto/",
+        "Não inventa convenções de outro projeto (loja, cupom, CartPage)",
+        "Spec em playwright/e2e e PO em playwright/support/pages",
+        "Não usa XPath nem subida /.. para bases lunares",
+        "Não refatora home.spec.ts sem pedido"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Automatiza o cadastro de uma missão no Mission Control. (A aplicação em http://localhost:3000 não responde.)",
+      "expected_output": "Detecta aplicação indisponível, não inventa locators, não declara que passou, resumo 'não executado', não altera playwright.config.ts nem a connection string.",
+      "assertions": [
+        "Informa que a aplicação não respondeu",
+        "Não inventa locators de telas que não viu",
+        "Não declara que o teste passou",
+        "Não altera configuração, credenciais ou endereço do banco"
+      ]
+    }
+  ]
+}
