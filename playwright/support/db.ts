@@ -1,9 +1,10 @@
 import { Pool } from 'pg'
 import { Kysely, PostgresDialect, CamelCasePlugin } from 'kysely'
 
-import { Mission, Reservation, Ticket } from './types'
+import { LunarBase, Mission, Reservation, Ticket } from './types'
 
 interface Database {
+  lunarBases: LunarBase,
   missions: Mission
   reservations: Reservation
   tickets: Ticket
@@ -20,6 +21,33 @@ export const db = new Kysely<Database>({
     dialect,
     plugins: [new CamelCasePlugin()]
 })
+
+export async function cleanLunarBase(base: LunarBase) {
+    await db
+        .deleteFrom('missions')
+        .where('baseId', '=', base.id)
+        .execute()
+    await deleteLunarBase(base.id)
+}
+
+export async function cleanAndInsertLunarBase(base: LunarBase) {
+    await cleanLunarBase(base)
+    await insertLunarBase(base)
+}
+
+export async function insertLunarBase(base: LunarBase) {
+    await db
+        .insertInto('lunarBases')
+        .values(base)
+        .execute()
+}
+
+export async function deleteLunarBase(id: string) {
+    await db
+        .deleteFrom('lunarBases')
+        .where('id', '=', id)
+        .execute()
+}
 
 export async function cleanMission(missionId: string) {
   await deleteTickets(missionId)
@@ -97,4 +125,4 @@ export async function cleanAndInsertSoldOutMission(missionId: string) {
     { id: 'cb041103-80a0-4cf9-b62a-d040deb9aed1', reservationId, missionId, seat: 'B1', fullName: 'Carla Lima', document: 'XP151565' },
     { id: '7f815efa-4626-4bd6-8f8f-d499847604a6', reservationId, missionId, seat: 'B2', fullName: 'Vitor Viana', document: 'XP8491' }
   ])
-}
+}

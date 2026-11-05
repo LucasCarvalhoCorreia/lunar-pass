@@ -1,3 +1,15 @@
+export interface LunarBase {
+  id: string,
+  name: string,
+  shortName: string,
+  tagline: string,
+  description: string,
+  imageUrl: string,
+  sortOrder: number,
+  isActive: boolean,
+  createdAt?: string
+}
+
 export interface Mission {
   id: string
   rocket: string

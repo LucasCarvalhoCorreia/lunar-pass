@@ -7,6 +7,8 @@ export class MissionsPage {
     readonly missionCards: Locator
     readonly baseFilterButton: Locator
     readonly sortSelect: Locator
+    readonly emptyState: Locator
+    readonly clearFilterLink: Locator
 
     constructor(page: Page) {
         this.page = page
@@ -15,6 +17,8 @@ export class MissionsPage {
         this.missionCards = page.getByTestId('mission-card')
         this.baseFilterButton = page.getByRole('button', { name: 'Bases lunares' })
         this.sortSelect = page.getByLabel('Ordenar por')
+        this.emptyState = page.getByTestId('missions-empty-state')
+        this.clearFilterLink = page.getByRole('link', { name: 'Ver todas as janelas' })
     }
 
     getMissionCard(missionCode: string): Locator {
