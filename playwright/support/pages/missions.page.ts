@@ -17,6 +17,10 @@ export class MissionsPage {
         this.sortSelect = page.getByLabel('Ordenar por')
     }
 
+    getMissionCard(missionCode: string): Locator {
+        return this.page.locator(`[data-mission-code="${missionCode}"]`)
+    }
+
     async getVisibleBases(): Promise<string[]> {
         await expect(this.missionCards.first()).toBeVisible()
         const headings = await this.page.getByRole('heading', { level: 3 }).allTextContents()

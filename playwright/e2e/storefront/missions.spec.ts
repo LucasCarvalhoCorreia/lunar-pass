@@ -1,4 +1,5 @@
 import { test, expect } from '../../support'
+import { cleanAndInsertSoldOutMission } from '../../support/db'
 
 test('Buscar missões para todas as bases lunares disponíveis', async ({ app }) => {
   // Arrange - preparação do cenário
@@ -35,4 +36,19 @@ test('Buscar missões filtrando por uma base específica', async ({ app }) => {
 
   await expect(app.missionsPage.title).toHaveText('1 missão disponível')
   await expect(app.missionsPage.activeFilterSummary).toContainText('Base Lunar Alpha')
+})
+
+test('Missão esgotada aparece nos resultados sem opção de reserva', async ({ app }) => {
+  // Arrange - preparação do cenário
+  await cleanAndInsertSoldOutMission('LP-0827B')
+  await app.homePage.go()
+
+  // Act - Execução da ação
+  await app.homePage.selectBase('Base Lunar Selene')
+  await app.homePage.searchMissions()
+
+  // Assert - verificar o resultado
+  const missionCard = app.missionsPage.getMissionCard('LP-0827B')
+  await expect(missionCard.getByTestId('mission-sold-out')).toHaveText('Esgotado')
+  await expect(missionCard.getByRole('link', { name: 'Reservar' })).not.toBeVisible()
 })

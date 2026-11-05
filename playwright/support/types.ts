@@ -8,9 +8,21 @@ export interface Mission {
 }
 
 export interface Reservation {
+  id?: string
+  userId?: string | null
   missionId: string
+  reservationCode?: string
+  contactEmail?: string
+  totalPrice?: string | number
+  status?: string
+  createdAt?: string
 }
 
 export interface Ticket {
+  id?: string
+  reservationId?: string
   missionId: string
+  seat?: string
+  fullName?: string
+  document?: string
 }
