@@ -6,6 +6,7 @@ import { RegisterPage } from './pages/register.page'
 import { HomePage } from './pages/home.page'
 import { MissionsPage } from './pages/missions.page'
 import { SeatMapPage } from './pages/seat-map.page'
+import { PassengersPage } from './pages/passengers.page'
 
 import { Navbar } from './pages/components/navbar'
 import { Toast } from './pages/components/toast'
@@ -17,6 +18,7 @@ const createApp = (page: Page) => ({
     homePage: new HomePage(page),
     missionsPage: new MissionsPage(page),
     seatMapPage: new SeatMapPage(page),
+    passengersPage: new PassengersPage(page),
     navbar: new Navbar(page),
     toast: new Toast(page),
 })
