@@ -126,3 +126,28 @@ export async function cleanAndInsertSoldOutMission(missionId: string) {
     { id: '7f815efa-4626-4bd6-8f8f-d499847604a6', reservationId, missionId, seat: 'B2', fullName: 'Vitor Viana', document: 'XP8491' }
   ])
 }
+
+
+export async function cleanAndBookSeat(missionId: string, seat: string) {
+  await cleanReservationAndTickets(missionId)
+  const reservationId = 'fa9f033a-5a15-4f32-86d1-64068776dfb6'
+  await insertReservation({
+    id: reservationId,
+    userId: null,
+    missionId,
+    reservationCode: 'WUL7PP',
+    contactEmail: 'lucas.carvalho5398@gmail.com',
+    totalPrice: '1000.00',
+    status: 'confirmed'
+  })
+  await insertTickets([
+    {
+      id: '846bb678-8843-439f-96f4-649724011504',
+      reservationId,
+      missionId,
+      seat,
+      fullName: 'Lucas C Carvalho Correia',
+      document: '15531153135135135315'
+    }
+  ])
+}

@@ -5,6 +5,7 @@ import { DashPage } from './pages/dash.page'
 import { RegisterPage } from './pages/register.page'
 import { HomePage } from './pages/home.page'
 import { MissionsPage } from './pages/missions.page'
+import { SeatMapPage } from './pages/seat-map.page'
 
 import { Navbar } from './pages/components/navbar'
 import { Toast } from './pages/components/toast'
@@ -15,6 +16,7 @@ const createApp = (page: Page) => ({
     registerPage: new RegisterPage(page),
     homePage: new HomePage(page),
     missionsPage: new MissionsPage(page),
+    seatMapPage: new SeatMapPage(page),
     navbar: new Navbar(page),
     toast: new Toast(page),
 })
