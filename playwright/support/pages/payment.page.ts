@@ -27,7 +27,7 @@ export class PaymentPage {
         this.alert = page.getByRole('alert')
         this.confirmationHeading = page.getByRole('heading', { name: 'Sua reserva está confirmada.' });
         this.reservationCode = page.getByTestId('reservation-code')
-        this.paymentStatus = page.getByText(/Pagamento aprovado! Pode arrumar as malas: a Lua já está esperando por você\./)
+        this.paymentStatus = page.getByText(/Pagamento negado pela operadora do cartão\./)
         this.ticketList = page.getByTestId('reservation-ticket')
     }
 

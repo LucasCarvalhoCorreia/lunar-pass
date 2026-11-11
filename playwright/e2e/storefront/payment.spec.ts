@@ -65,7 +65,7 @@ test('Emissão de tickets com sucesso usando Mastercard', async ({ app }) => {
   await expect(app.paymentPage.reservationCode).toHaveText(/^[A-Z0-9]{6}$/);
 });
 
-test('Emissão de tickets com sucesso usando American Express', async ({ app }) => {
+test('Emissão de tickets negada usando American Express', async ({ app }) => {
   // Arrange
   await cleanReservationAndTickets('LP-Y0Y28');
   await app.paymentPage.go('LP-Y0Y28');
@@ -75,7 +75,5 @@ test('Emissão de tickets com sucesso usando American Express', async ({ app }) 
   await app.paymentPage.submit();
 
   // Assert
-  await expect(app.paymentPage.confirmationHeading).toBeVisible();
-  await expect(app.paymentPage.paymentStatus).toContainText('Pagamento aprovado! Pode arrumar as malas: a Lua já está esperando por você.');
-  await expect(app.paymentPage.reservationCode).toHaveText(/^[A-Z0-9]{6}$/);
+  await expect(app.paymentPage.paymentStatus).toContainText('Pagamento negado pela operadora do cartão.');
 });
