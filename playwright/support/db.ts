@@ -1,5 +1,6 @@
 import { Pool } from 'pg'
 import { Kysely, PostgresDialect, CamelCasePlugin } from 'kysely'
+import { randomUUID } from 'crypto'
 
 import { LunarBase, Mission, Reservation, Ticket } from './types'
 
@@ -127,7 +128,6 @@ export async function cleanAndInsertSoldOutMission(missionId: string) {
   ])
 }
 
-
 export async function cleanAndBookSeat(missionId: string, seat: string) {
   await cleanReservationAndTickets(missionId)
   const reservationId = 'fa9f033a-5a15-4f32-86d1-64068776dfb6'
@@ -148,6 +148,29 @@ export async function cleanAndBookSeat(missionId: string, seat: string) {
       seat,
       fullName: 'Lucas C Carvalho Correia',
       document: '15531153135135135315'
+    }
+  ])
+}
+
+export async function bookSeatForConcurrency(missionId: string, seat: string) {
+  const reservationId = randomUUID()
+  await insertReservation({
+    id: reservationId,
+    userId: null,
+    missionId,
+    reservationCode: 'CNCR01',
+    contactEmail: 'concurrency@lunarpass.dev',
+    totalPrice: '1000.00',
+    status: 'confirmed'
+  })
+  await insertTickets([
+    {
+      id: randomUUID(),
+      reservationId,
+      missionId,
+      seat,
+      fullName: 'Concorrente Teste',
+      document: 'XP00001'
     }
   ])
 }
