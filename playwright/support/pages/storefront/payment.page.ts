@@ -14,6 +14,7 @@ export class PaymentPage {
     readonly reservationCode: Locator
     readonly paymentStatus: Locator
     readonly ticketList: Locator
+    readonly paymentDenied: Locator
 
     constructor(page: Page) {
         this.page = page
@@ -27,7 +28,8 @@ export class PaymentPage {
         this.alert = page.getByRole('alert')
         this.confirmationHeading = page.getByRole('heading', { name: 'Sua reserva está confirmada.' });
         this.reservationCode = page.getByTestId('reservation-code')
-        this.paymentStatus = page.getByText(/Pagamento negado pela operadora do cartão\./)
+        this.paymentStatus = page.getByTestId('reservation-payment-status')
+        this.paymentDenied = page.getByText('Pagamento negado pela')
         this.ticketList = page.getByTestId('reservation-ticket')
     }
 

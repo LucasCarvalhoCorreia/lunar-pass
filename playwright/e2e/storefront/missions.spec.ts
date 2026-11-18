@@ -6,13 +6,13 @@ import {cleanAndInsertLunarBase,} from '../../support/db'
 
 test('Buscar missões para todas as bases lunares disponíveis', async ({ app }) => {
   // Arrange - preparação do cenário
-  await app.homePage.go()
+  await app.store.homePage.go()
 
   // Act - Execução da ação
-  await app.homePage.searchMissions()
+  await app.store.homePage.searchMissions()
 
   // Assert - verificar o resultado
-  const bases = await app.missionsPage.getVisibleBases()
+  const bases = await app.store.missionsPage.getVisibleBases()
   expect(bases).toEqual(expect.arrayContaining([
     'Base Lunar Alpha',
     'Base Lunar Orion',
@@ -20,25 +20,25 @@ test('Buscar missões para todas as bases lunares disponíveis', async ({ app })
     'Base Lunar Selene'
   ]))
 
-  const dates = await app.missionsPage.getDepartureDates()
+  const dates = await app.store.missionsPage.getDepartureDates()
   const sortedDates = [...dates].sort((a, b) => a.getTime() - b.getTime())
   expect(dates).toEqual(sortedDates)
 })
 
 test('Buscar missões filtrando por uma base específica', async ({ app }) => {
   // Arrange - preparação do cenário
-  await app.homePage.go()
+  await app.store.homePage.go()
 
   // Act - Execução da ação
-  await app.homePage.selectBase('Base Lunar Alpha')
-  await app.homePage.searchMissions()
+  await app.store.homePage.selectBase('Base Lunar Alpha')
+  await app.store.homePage.searchMissions()
 
   // Assert - verificar o resultado
-  const bases = await app.missionsPage.getVisibleBases()
+  const bases = await app.store.missionsPage.getVisibleBases()
   expect(bases).toEqual(['Base Lunar Alpha'])
 
-  await expect(app.missionsPage.title).toHaveText('1 missão disponível')
-  await expect(app.missionsPage.activeFilterSummary).toContainText('Base Lunar Alpha')
+  await expect(app.store.missionsPage.title).toHaveText('7 missões disponíveis')
+  await expect(app.store.missionsPage.activeFilterSummary).toContainText('Base Lunar Alpha')
 })
 
 test('Lidar com ausência de missões para os filtros', async ({ app }) => {
@@ -57,28 +57,28 @@ test('Lidar com ausência de missões para os filtros', async ({ app }) => {
   await cleanAndInsertLunarBase(lunarBase)
 
   // Act
-  await app.homePage.go()
-  await app.homePage.selectBase(lunarBase.name)
-  await app.homePage.searchMissions()
+  await app.store.homePage.go()
+  await app.store.homePage.selectBase(lunarBase.name)
+  await app.store.homePage.searchMissions()
 
   // Assert
-  await expect(app.missionsPage.emptyState).toContainText(
+  await expect(app.store.missionsPage.emptyState).toContainText(
     'Nenhuma missão programada com esses filtros.'
   )
-  await expect(app.missionsPage.clearFilterLink).toBeVisible()
+  await expect(app.store.missionsPage.clearFilterLink).toBeVisible()
 })
 
 test('Missão esgotada aparece nos resultados sem opção de reserva', async ({ app }) => {
   // Arrange - preparação do cenário
   await cleanAndInsertSoldOutMission('LP-0827B')
-  await app.homePage.go()
+  await app.store.homePage.go()
 
   // Act - Execução da ação
-  await app.homePage.selectBase('Base Lunar Selene')
-  await app.homePage.searchMissions()
+  await app.store.homePage.selectBase('Base Lunar Selene')
+  await app.store.homePage.searchMissions()
 
   // Assert - verificar o resultado
-  const missionCard = app.missionsPage.getMissionCard('LP-0827B')
+  const missionCard = app.store.missionsPage.getMissionCard('LP-0827B')
   await expect(missionCard.getByTestId('mission-sold-out')).toHaveText('Esgotado')
   await expect(missionCard.getByRole('link', { name: 'Reservar' })).not.toBeVisible()
 })

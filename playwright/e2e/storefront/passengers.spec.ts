@@ -1,88 +1,161 @@
 import { test, expect } from '../../support'
-import { cleanReservationAndTickets } from '../../support/db'
+import { cleanAndInsertMission } from '../../support/db'
+import { birthDateForAge } from '../../support/helpers'
+import { Mission } from '../../support/types'
 
 test('Aceitar nome com 3 caracteres e passaporte com 5 caracteres (mínimos válidos)', async ({ app }) => {
-  // Arrange - preparação do cenário
-  await cleanReservationAndTickets('LP-2801A')
-  await app.passengersPage.go('LP-2801A')
+  // Arrange
+  const mission: Mission = {
+    id: 'LP-0929A',
+    rocket: 'Starship',
+    baseId: 'alpha',
+    departureDate: '2029-09-10',
+    returnDate: '2029-09-17',
+    price: 1000.00
+  }
 
-  // Act - Execução da ação
-  await app.passengersPage.fillForm('Ana', 'XP123')
-  await app.passengersPage.submit()
+  await cleanAndInsertMission(mission.id, mission)
+  await app.store.bookingPage.go(mission.id)
+  await app.store.bookingPage.selectSeats(['A1'])
+  await app.store.bookingPage.continue()
 
-  // Assert - verificar o resultado
-  await expect(app.passengersPage.paymentHeading).toBeVisible()
+  // Act
+  await app.store.bookingPage.submitPassenger('Ana', 'XP123', birthDateForAge(25))
+
+  // Assert
+  await expect(app.store.bookingPage.paymentTitle).toBeVisible()
 })
 
 test('Aceitar nome com 120 caracteres e passaporte com 30 caracteres (máximos válidos)', async ({ app }) => {
   // Arrange - preparação do cenário
-  await cleanReservationAndTickets('LP-Y0Y28')
-  await app.passengersPage.go('LP-Y0Y28')
+  const mission: Mission = {
+    id: 'LP-Y0Y28',
+    rocket: 'Starship',
+    baseId: 'alpha',
+    departureDate: '2029-09-10',
+    returnDate: '2029-09-17',
+    price: 1000.00
+  }
+
+  await cleanAndInsertMission(mission.id, mission)
+  await app.store.bookingPage.go(mission.id)
+  await app.store.bookingPage.selectSeats(['A1'])
+  await app.store.bookingPage.continue()
 
   // Act - Execução da ação
-  await app.passengersPage.fillForm('a'.repeat(120), 'A'.repeat(30))
-  await app.passengersPage.submit()
+  await app.store.bookingPage.submitPassenger('a'.repeat(120), 'A'.repeat(30), birthDateForAge(25))
 
   // Assert - verificar o resultado
-  await expect(app.passengersPage.paymentHeading).toBeVisible()
+  await expect(app.store.bookingPage.paymentTitle).toBeVisible()
 })
 
 test('Recusar nome com 2 caracteres (abaixo do limite mínimo)', async ({ app }) => {
   // Arrange - preparação do cenário
-  await cleanReservationAndTickets('LP-3T34A')
-  await app.passengersPage.go('LP-3T34A')
+  const mission: Mission = {
+    id: 'LP-3T34A',
+    rocket: 'Starship',
+    baseId: 'alpha',
+    departureDate: '2029-09-10',
+    returnDate: '2029-09-17',
+    price: 1000.00
+  }
+
+  await cleanAndInsertMission(mission.id, mission)
+  await app.store.bookingPage.go(mission.id)
+  await app.store.bookingPage.selectSeats(['A1'])
+  await app.store.bookingPage.continue()
 
   // Act - Execução da ação
-  await app.passengersPage.fillForm('Ab', 'XP1234567890123')
-  await app.passengersPage.submit()
+  await app.store.bookingPage.fullNameInput.fill('Ab')
+  await app.store.bookingPage.passportInput.fill('XP1234567890123')
+  await app.store.bookingPage.page.getByRole('button', { name: 'Ir para pagamento' }).click()
 
   // Assert - verificar o resultado
-  await expect(app.passengersPage.fullNameInput).toHaveAttribute('aria-invalid', 'true')
-  await expect(app.passengersPage.alert).toHaveText('O nome deve ter pelo menos 3 caracteres')
-  await expect(app.passengersPage.fullNameInput).toBeFocused()
+  await expect(app.store.bookingPage.fullNameInput).toHaveAttribute('aria-invalid', 'true')
+  await expect(app.store.bookingPage.alert).toHaveText('O nome deve ter pelo menos 3 caracteres')
+  await expect(app.store.bookingPage.fullNameInput).toBeFocused()
 })
 
 test('Recusar nome com 121 caracteres (acima do limite máximo)', async ({ app }) => {
   // Arrange - preparação do cenário
-  await cleanReservationAndTickets('LP-IDF8H')
-  await app.passengersPage.go('LP-IDF8H')
+  const mission: Mission = {
+    id: 'LP-IDF8H',
+    rocket: 'Starship',
+    baseId: 'alpha',
+    departureDate: '2029-09-10',
+    returnDate: '2029-09-17',
+    price: 1000.00
+  }
+
+  await cleanAndInsertMission(mission.id, mission)
+  await app.store.bookingPage.go(mission.id)
+  await app.store.bookingPage.selectSeats(['A1'])
+  await app.store.bookingPage.continue()
 
   // Act - Execução da ação
-  await app.passengersPage.fillForm('a'.repeat(121), 'XP1234567890123')
-  await app.passengersPage.submit()
+  await app.store.bookingPage.fullNameInput.fill('a'.repeat(121))
+  await app.store.bookingPage.passportInput.fill('XP1234567890123')
+  //await app.store.bookingPage.birthDateInput.fill(birthDateForAge(25))
+  await app.store.bookingPage.page.getByRole('button', { name: 'Ir para pagamento' }).click()
 
   // Assert - verificar o resultado
-  await expect(app.passengersPage.fullNameInput).toHaveAttribute('aria-invalid', 'true')
-  await expect(app.passengersPage.alert).toHaveText('O nome deve ter no máximo 120 caracteres')
-  await expect(app.passengersPage.fullNameInput).toBeFocused()
+  await expect(app.store.bookingPage.fullNameInput).toHaveAttribute('aria-invalid', 'true')
+  await expect(app.store.bookingPage.alert).toHaveText('O nome deve ter no máximo 120 caracteres')
+  await expect(app.store.bookingPage.fullNameInput).toBeFocused()
 })
 
 test('Recusar passaporte com 4 caracteres (abaixo do limite mínimo)', async ({ app }) => {
   // Arrange - preparação do cenário
-  await cleanReservationAndTickets('LP-OXS8H')
-  await app.passengersPage.go('LP-OXS8H')
+  const mission: Mission = {
+    id: 'LP-OXS8H',
+    rocket: 'Starship',
+    baseId: 'alpha',
+    departureDate: '2029-09-10',
+    returnDate: '2029-09-17',
+    price: 1000.00
+  }
+
+  await cleanAndInsertMission(mission.id, mission)
+  await app.store.bookingPage.go(mission.id)
+  await app.store.bookingPage.selectSeats(['A1'])
+  await app.store.bookingPage.continue()
 
   // Act - Execução da ação
-  await app.passengersPage.fillForm('a'.repeat(30), 'ABCD')
-  await app.passengersPage.submit()
+  await app.store.bookingPage.fullNameInput.fill('a'.repeat(30))
+  await app.store.bookingPage.passportInput.fill('ABCD')
+  //await app.store.bookingPage.birthDateInput.fill(birthDateForAge(25))
+  await app.store.bookingPage.page.getByRole('button', { name: 'Ir para pagamento' }).click()
 
   // Assert - verificar o resultado
-  await expect(app.passengersPage.documentInput).toHaveAttribute('aria-invalid', 'true')
-  await expect(app.passengersPage.alert).toHaveText('O passaporte deve ter pelo menos 5 caracteres')
-  await expect(app.passengersPage.documentInput).toBeFocused()
+  await expect(app.store.bookingPage.passportInput).toHaveAttribute('aria-invalid', 'true')
+  await expect(app.store.bookingPage.alert).toHaveText('O passaporte deve ter pelo menos 5 caracteres')
+  await expect(app.store.bookingPage.passportInput).toBeFocused()
 })
 
 test('Recusar passaporte com 31 caracteres (acima do limite máximo)', async ({ app }) => {
   // Arrange - preparação do cenário
-  await cleanReservationAndTickets('LP-C1SL7')
-  await app.passengersPage.go('LP-C1SL7')
+  const mission: Mission = {
+    id: 'LP-C1SL7',
+    rocket: 'Starship',
+    baseId: 'alpha',
+    departureDate: '2029-09-10',
+    returnDate: '2029-09-17',
+    price: 1000.00
+  }
+
+  await cleanAndInsertMission(mission.id, mission)
+  await app.store.bookingPage.go(mission.id)
+  await app.store.bookingPage.selectSeats(['A1'])
+  await app.store.bookingPage.continue()
 
   // Act - Execução da ação
-  await app.passengersPage.fillForm('a'.repeat(30), 'A'.repeat(31))
-  await app.passengersPage.submit()
+  await app.store.bookingPage.fullNameInput.fill('a'.repeat(30))
+  await app.store.bookingPage.passportInput.fill('A'.repeat(31))
+  //await app.store.bookingPage.birthDateInput.fill(birthDateForAge(25))
+  await app.store.bookingPage.page.getByRole('button', { name: 'Ir para pagamento' }).click()
 
   // Assert - verificar o resultado
-  await expect(app.passengersPage.documentInput).toHaveAttribute('aria-invalid', 'true')
-  await expect(app.passengersPage.alert).toHaveText('O passaporte deve ter no máximo 30 caracteres')
-  await expect(app.passengersPage.documentInput).toBeFocused()
+  await expect(app.store.bookingPage.passportInput).toHaveAttribute('aria-invalid', 'true')
+  await expect(app.store.bookingPage.alert).toHaveText('O passaporte deve ter no máximo 30 caracteres')
+  await expect(app.store.bookingPage.passportInput).toBeFocused()
 })
