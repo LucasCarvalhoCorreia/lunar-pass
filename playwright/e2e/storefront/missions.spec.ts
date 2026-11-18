@@ -37,7 +37,7 @@ test('Buscar missões filtrando por uma base específica', async ({ app }) => {
   const bases = await app.store.missionsPage.getVisibleBases()
   expect(bases).toEqual(['Base Lunar Alpha'])
 
-  await expect(app.store.missionsPage.title).toHaveText('7 missões disponíveis')
+  await expect(app.store.missionsPage.title).toHaveText('11 missões disponíveis')
   await expect(app.store.missionsPage.activeFilterSummary).toContainText('Base Lunar Alpha')
 })
 
