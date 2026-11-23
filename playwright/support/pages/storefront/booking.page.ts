@@ -94,7 +94,7 @@ export class BookingPage {
     async submitPassenger(fullName: string, passport: string, birthDate: string) {
         await this.fullNameInput.fill(fullName)
         await this.passportInput.fill(passport)
-        //await this.birthDateInput.fill(birthDate)
+        await this.birthDateInput.fill(birthDate)
         await this.page.getByRole('button', { name: 'Ir para pagamento' }).click()
     }
 

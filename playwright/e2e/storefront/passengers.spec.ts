@@ -68,6 +68,7 @@ test('Recusar nome com 2 caracteres (abaixo do limite mínimo)', async ({ app })
   // Act - Execução da ação
   await app.store.bookingPage.fullNameInput.fill('Ab')
   await app.store.bookingPage.passportInput.fill('XP1234567890123')
+  await app.store.bookingPage.birthDateInput.fill(birthDateForAge(25))
   await app.store.bookingPage.page.getByRole('button', { name: 'Ir para pagamento' }).click()
 
   // Assert - verificar o resultado
@@ -95,7 +96,7 @@ test('Recusar nome com 121 caracteres (acima do limite máximo)', async ({ app }
   // Act - Execução da ação
   await app.store.bookingPage.fullNameInput.fill('a'.repeat(121))
   await app.store.bookingPage.passportInput.fill('XP1234567890123')
-  //await app.store.bookingPage.birthDateInput.fill(birthDateForAge(25))
+  await app.store.bookingPage.birthDateInput.fill(birthDateForAge(25))
   await app.store.bookingPage.page.getByRole('button', { name: 'Ir para pagamento' }).click()
 
   // Assert - verificar o resultado
@@ -123,7 +124,7 @@ test('Recusar passaporte com 4 caracteres (abaixo do limite mínimo)', async ({ 
   // Act - Execução da ação
   await app.store.bookingPage.fullNameInput.fill('a'.repeat(30))
   await app.store.bookingPage.passportInput.fill('ABCD')
-  //await app.store.bookingPage.birthDateInput.fill(birthDateForAge(25))
+  await app.store.bookingPage.birthDateInput.fill(birthDateForAge(25))
   await app.store.bookingPage.page.getByRole('button', { name: 'Ir para pagamento' }).click()
 
   // Assert - verificar o resultado
@@ -151,11 +152,60 @@ test('Recusar passaporte com 31 caracteres (acima do limite máximo)', async ({ 
   // Act - Execução da ação
   await app.store.bookingPage.fullNameInput.fill('a'.repeat(30))
   await app.store.bookingPage.passportInput.fill('A'.repeat(31))
-  //await app.store.bookingPage.birthDateInput.fill(birthDateForAge(25))
+  await app.store.bookingPage.birthDateInput.fill(birthDateForAge(25))
   await app.store.bookingPage.page.getByRole('button', { name: 'Ir para pagamento' }).click()
 
   // Assert - verificar o resultado
   await expect(app.store.bookingPage.passportInput).toHaveAttribute('aria-invalid', 'true')
   await expect(app.store.bookingPage.alert).toHaveText('O passaporte deve ter no máximo 30 caracteres')
   await expect(app.store.bookingPage.passportInput).toBeFocused()
+})
+
+test('Não deve permitir o cadastro de passageiro menor de idade', async ({ app }) => {
+  // Arrange - preparação do cenário
+  const mission: Mission = {
+    id: 'LP-0929B',
+    rocket: 'Starship',
+    baseId: 'alpha',
+    departureDate: '2029-09-10',
+    returnDate: '2029-09-17',
+    price: 1000.00
+  }
+
+  await cleanAndInsertMission(mission.id, mission)
+  await app.store.bookingPage.go(mission.id)
+  await app.store.bookingPage.selectSeats(['A1'])
+  await app.store.bookingPage.continue()
+
+  // Act - Execução da ação
+  await app.store.bookingPage.fullNameInput.fill('Gabriel Lucas')
+  await app.store.bookingPage.passportInput.fill('XP12345')
+  await app.store.bookingPage.birthDateInput.fill(birthDateForAge(17))
+  await app.store.bookingPage.page.getByRole('button', { name: 'Ir para pagamento' }).click()
+
+  // Assert - verificar o resultado
+  await expect(app.store.bookingPage.alert).toHaveText('O passageiro precisa ser maior de idade.')
+})
+
+test('Deve permitir o cadastro de passageiro maior de idade', async ({ app }) => {
+  // Arrange - preparação do cenário
+  const mission: Mission = {
+    id: 'LP-0929C',
+    rocket: 'Starship',
+    baseId: 'alpha',
+    departureDate: '2029-09-10',
+    returnDate: '2029-09-17',
+    price: 1000.00
+  }
+
+  await cleanAndInsertMission(mission.id, mission)
+  await app.store.bookingPage.go(mission.id)
+  await app.store.bookingPage.selectSeats(['A1'])
+  await app.store.bookingPage.continue()
+
+  // Act - Execução da ação
+  await app.store.bookingPage.submitPassenger('Gabriel Lucas', 'XP12345', birthDateForAge(25))
+
+  // Assert - verificar o resultado
+  await expect(app.store.bookingPage.paymentTitle).toBeVisible()
 })
