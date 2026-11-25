@@ -11,9 +11,12 @@ interface Database {
   tickets: Ticket
 }
 
+const connectionString = process.env.DATABASE_URL
+if (!connectionString) throw new Error('Defina DATABASE_URL (veja .env.example).')
+
 const dialect = new PostgresDialect({
     pool: new Pool({
-        connectionString: 'postgresql://postgres.bcappozhmijfmthipruu:qW5A5x6A643tB413@aws-0-us-east-2.pooler.supabase.com:5432/postgres',
+        connectionString,
         ssl: {rejectUnauthorized: false,},
     })
 })
