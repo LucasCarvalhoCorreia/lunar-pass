@@ -37,7 +37,7 @@ jobs:
         with:
           node-version: '24'
           cache: yarn
-        - run: yarn install --frozen-lockfile
+      - run: yarn install --frozen-lockfile
       - name: Listar os testes
         run: npx playwright test --list
 
